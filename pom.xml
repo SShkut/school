@@ -5,13 +5,31 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>sql-jdbc-school </name>
   <properties>
+    <maven.compile.source>1.8</maven.compile.source>
+  	<maven.compile.target>1.8</maven.compile.target>
+  	<maven.version>3.8.0</maven.version>
+  	<postgres.driver.version>42.2.12</postgres.driver.version>
+  	<hikaricp.version>3.4.2</hikaricp.version>
+  	<slf4j.version>1.7.30</slf4j.version>
   	<junit.version>5.6.0</junit.version>
   	<mockito.version>2.10.0</mockito.version>
-  	<maven.version>3.8.0</maven.version>
-  	<maven.compile.source>1.8</maven.compile.source>
-  	<maven.compile.target>1.8</maven.compile.target>
   </properties>
   <dependencies>
+  	<dependency>
+	    <groupId>org.postgresql</groupId>
+	    <artifactId>postgresql</artifactId>
+	    <version>${postgres.driver.version}</version>
+	</dependency>
+	<dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>${hikaricp.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>${slf4j.version}</version>
+    </dependency>
   	<dependency>
   		<groupId>org.junit.jupiter</groupId>
   		<artifactId>junit-jupiter-engine</artifactId>
