@@ -1,4 +1,4 @@
-package com.foxminded.school;
+package com.foxminded.school.util;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class FileReader {
 		}
 	}
 	
-	public Path getAbsolutePath(String fileName) {
+	private Path getAbsolutePath(String fileName) {
 		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 		try {
 			URL url = classLoader.getResource(fileName);

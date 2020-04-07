@@ -1,13 +1,13 @@
-package com.foxminded.school;
+package com.foxminded.school.util;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Bootstrap {
+public class ScheemaCreator {
 	
-	public void createSchema() throws SQLException, IOException {
+	public void create() throws SQLException, IOException {
 		FileReader fileReader = new FileReader();
 		String[] instructions = fileReader.readFile("create_tables.sql").split(";");
 		try (Connection connection = ConnectionsPool.getConnection(); Statement statement = connection.createStatement()) {

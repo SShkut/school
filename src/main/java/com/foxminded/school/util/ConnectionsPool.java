@@ -1,4 +1,4 @@
-package com.foxminded.school;
+package com.foxminded.school.util;
 
 import java.sql.Connection;
 import java.sql.SQLException;
