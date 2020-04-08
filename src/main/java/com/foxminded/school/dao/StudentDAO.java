@@ -44,7 +44,7 @@ public class StudentDAO {
 	}
 	
 	public List<Student> findAll() {
-		String sql = "SELECT * FROM students";
+		String sql = "SELECT * FROM students ORDER BY id";
 		List<Student> students = new ArrayList<>();
 		try(Connection connection = ConnectionsPool.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
 			try (ResultSet result = statement.executeQuery()) {
@@ -124,5 +124,59 @@ public class StudentDAO {
 			e.printStackTrace();
 			return true;
 		}
+	}
+	
+	public List<Student> findAllStudentsRelatedToCourse(int courseId) {
+		String sql = "select s.id, s.first_name, s.last_name " + 
+				"from courses c " + 
+				"join students_courses sc on sc.course_id = c.id and c.id = ? " + 
+				"join students s on sc.student_id = s.id " +
+				"order by s.id";
+		List<Student> students = new ArrayList<>();
+		try(Connection connection = ConnectionsPool.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, courseId);
+			try (ResultSet result = statement.executeQuery()) {
+				while (result.next()) {
+					students.add(new Student(result.getInt("id"), result.getString("first_name"), result.getString("last_name")));
+				}
+				return students;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return students;
+		}
+	}
+	
+	public List<Student> findAllStudentWithoutGivenCourse(int courseId) {
+		String sql = "select distinct s.id, s.first_name, s.last_name " + 
+				"from students s " + 
+				"left join students_courses sc on sc.student_id = s.id " + 
+				"left join courses c on c.id = sc.course_id " + 
+				"where s.id not in (select student_id from students_courses where course_id = ?)" +
+				"order by s.id";
+		List<Student> students = new ArrayList<>();
+		try(Connection connection = ConnectionsPool.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, courseId);
+			try (ResultSet result = statement.executeQuery()) {
+				while (result.next()) {
+					students.add(new Student(result.getInt("id") ,result.getString("first_name"), result.getString("last_name")));
+				}
+				return students;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return students;
+		}
+	}
+	
+	public void removeStudentFromCourse(Student student, Course course) {
+		String sql = "delete from students_courses where student_id = ? and course_id = ?";
+		try(Connection connection = ConnectionsPool.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, student.getId());
+			statement.setInt(2, course.getId());
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
 	}
 }

@@ -9,8 +9,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.foxminded.school.util.FileReader;
-
 class FileReaderTest {
 	
 	private FileReader fileReader;
@@ -24,7 +22,7 @@ class FileReaderTest {
 	void givenExistentFile_whenReadFile_thenReturnString() throws IOException {
 		String expected = "SELECT * FROM table1;SELECT * FROM table2;";
 		
-		String actual = fileReader.readFile("testReaderFile.sql");
+		String actual = fileReader.readFile("ReaderFileTest.sql");
 		
 		assertEquals(expected, actual);
 	}

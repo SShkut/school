@@ -9,6 +9,10 @@ public class Student {
 	
 	public Student() {
 	}
+	
+	public Student(Integer id) {
+		this.id = id;
+	}
 
 	public Student(String firstName, String lastName) {
 		this.firstName = firstName;
@@ -16,10 +20,15 @@ public class Student {
 	}
 
 	public Student(String firstName, String lastName, Integer groupId) {
-		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.groupId = groupId;
+	}	
+
+	public Student(Integer id, String firstName, String lastName) {
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
 	}
 
 	public Student(Integer id, String firstName, String lastName, Integer groupId) {
@@ -103,4 +112,9 @@ public class Student {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return id + " " + firstName + " " + lastName;
+	}	
 }

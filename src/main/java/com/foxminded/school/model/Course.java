@@ -7,17 +7,19 @@ public class Course {
 	private String courseDescription;	
 	
 	public Course() {
-		super();
+	}	
+
+	public Course(Integer id, String courseName) {
+		this.id = id;
+		this.courseName = courseName;
 	}
 
 	public Course(String courseName, String courseDescription) {
-		super();
 		this.courseName = courseName;
 		this.courseDescription = courseDescription;
 	}
 	
 	public Course(Integer id, String courseName, String courseDescription) {
-		super();
 		this.id = id;
 		this.courseName = courseName;
 		this.courseDescription = courseDescription;
@@ -77,5 +79,10 @@ public class Course {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return id + " " + courseName;
 	}
 }

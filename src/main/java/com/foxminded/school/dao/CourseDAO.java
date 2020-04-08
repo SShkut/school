@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.foxminded.school.model.Course;
+import com.foxminded.school.model.Student;
 import com.foxminded.school.util.ConnectionsPool;
 
 public class CourseDAO {
@@ -56,19 +57,6 @@ public class CourseDAO {
 		}
 	}
 	
-	public Course findByName(String name) {
-		String sql = "SELECT * FROM courses WHERE course_name = ?";
-		try (Connection connection = ConnectionsPool.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setString(1, name);
-			try (ResultSet result = statement.executeQuery()) {
-				return new Course(result.getInt("id"), result.getString("course_name"), result.getString("course_description"));
-			}
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-			return new Course();
-		}
-	}
-	
 	public boolean isExists(Course course) {
 		String sql = "SELECT FROM courses WHERE id = ?";
 		try(Connection connection = ConnectionsPool.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -80,5 +68,25 @@ public class CourseDAO {
 			e.printStackTrace();
 			return false;
 		}				
+	}
+	
+	public List<Course> findAllCoursesOfStudent(Student student) {
+		String sql = "select c.id, c.course_name " + 
+				"from courses c " + 
+				"join students_courses sc on c.id = sc.course_id " + 
+				"join students s on s.id = sc.student_id and s.id = ?";
+		List<Course> courses = new ArrayList<>();
+		try (Connection connection = ConnectionsPool.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, student.getId());
+			try (ResultSet result = statement.executeQuery()) {
+				while (result.next()) {
+					courses.add(new Course(result.getInt("id"), result.getString("course_name")));
+				}
+				return courses;
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return courses;
+		}
 	}
 }

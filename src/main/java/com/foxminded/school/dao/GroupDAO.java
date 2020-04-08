@@ -67,4 +67,21 @@ public class GroupDAO {
 			return false;
 		}		
 	}
+	
+	public List<Group> findAllGroupsWithLessOrEqualStudentCount(int studentCount) {
+		String sql = "select group_name from groups g join students s on g.id = s.group_id group by g.group_name having count(s.id) <= ?";
+		List<Group> groups = new ArrayList<>();
+		try (Connection connection = ConnectionsPool.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, studentCount);
+			try (ResultSet result = statement.executeQuery()) {
+				while (result.next()) {
+					groups.add(new Group(result.getString("group_name")));
+				}
+				return groups;
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return groups;
+		}
+	}
 }

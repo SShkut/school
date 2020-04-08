@@ -111,7 +111,7 @@ public class StartupDataCreator {
 	
 	private List<Course> getCoursesNumTimes(int num, List<Course> courses) {
 		List<Course> result = new ArrayList<>();
-		for(int i = 0; i < num; ++i) {
+		for(int i = 0; i <= num; ++i) {
 			result.add(courses.get(rand.nextInt(courses.size())));
 		}
 		return result;

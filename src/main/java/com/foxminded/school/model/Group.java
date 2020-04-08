@@ -62,5 +62,10 @@ public class Group {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}	
+	}
+
+	@Override
+	public String toString() {
+		return groupName;
+	}
 }
