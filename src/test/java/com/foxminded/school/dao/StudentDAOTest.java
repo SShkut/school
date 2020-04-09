@@ -1,15 +1,14 @@
 package com.foxminded.school.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import org.dbunit.DataSourceDatabaseTester;
 import org.dbunit.IDatabaseTester;
-import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,34 +17,39 @@ import org.junit.jupiter.api.Test;
 import com.foxminded.school.model.Course;
 import com.foxminded.school.model.Group;
 import com.foxminded.school.model.Student;
+import com.foxminded.school.util.ConnectionProvider;
+import com.foxminded.school.util.ScheemaCreator;
 
 class StudentDAOTest {
 
-	private StudentDAO studentDAO;
+	private StudentDao studentDao;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		IDatabaseTester tester = new JdbcDatabaseTester("org.postgresql.ds.PGSimpleDataSource", "jdbc:postgresql://localhost:5432/school", "admin", "admin");
-		IDataSet dataSet = new FlatXmlDataSetBuilder().build(this.getClass().getClassLoader().getResource("StudentCourseTestData.xml"));
+		ConnectionProvider provider = new ConnectionProvider("/dbTest.properties");
+		ScheemaCreator scheemaCreator = new ScheemaCreator(provider);
+		scheemaCreator.create();
+		IDatabaseTester tester = new DataSourceDatabaseTester(provider.getDataSource());
+		IDataSet dataSet = new FlatXmlDataSetBuilder().build(this.getClass().getClassLoader().getResource("schoolTestData.xml"));
 		tester.setDataSet(dataSet);
 		tester.onSetup();
-		studentDAO = new StudentDAO();
+		studentDao = new StudentDao(provider);
 	}
 
 	@Test
-	void givenExistentId_whenFindById_thenReturnStudent() {
-		Student expected = new Student(3, "David", "Nagel", 1);
+	void givenExistentId_whenFindById_thenReturnOptional() {
+		Optional<Student> expected = Optional.of(new Student(3, "David", "Nagel", 1));
 		
-		Student actual = studentDAO.findById(3);
+		Optional<Student> actual = studentDao.findById(3);
 		
 		assertEquals(expected, actual);
 	}
 	
 	@Test
-	void givenNonExistentId_whenFindById_thenReturnEmptyStudent() {		
-		Student expected = new Student();
+	void givenNonExistentId_whenFindById_thenReturnEmptyOptional() {		
+		Optional<Student> expected = Optional.empty();
 		
-		Student actual = studentDAO.findById(-1);
+		Optional<Student> actual = studentDao.findById(-1);
 		
 		assertEquals(expected, actual);
 	}
@@ -60,7 +64,7 @@ class StudentDAOTest {
 		expected.add(new Student(5, "James", "Richard", 2));
 		expected.add(new Student(6, "Charles", "Ulloa", 2));
 		
-		List<Student> actual = studentDAO.findAll();
+		List<Student> actual = studentDao.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -74,24 +78,10 @@ class StudentDAOTest {
 		expected.add(new Student(5, "James", "Richard", 2));
 		expected.add(new Student(6, "Charles", "Ulloa", 2));
 		
-		studentDAO.deleteById(1);
+		studentDao.deleteById(1);
 		
-		List<Student> actual = studentDAO.findAll();		
+		List<Student> actual = studentDao.findAll();		
 		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void givenExistentStudent_whenIsExists_thenReturnTrue() {
-		Student group = new Student(2, "Linda", "MacCubbin", 1);
-		
-		assertTrue(studentDAO.isExists(group));
-	}
-	
-	@Test
-	void givenNonExistentStudent_whenIsExists_thenReturnFalse() {
-		Student group = new Student(-1, "Linda", "MacCubbin", 1);
-		
-		assertFalse(studentDAO.isExists(group));
 	}
 	
 	@Test
@@ -100,9 +90,9 @@ class StudentDAOTest {
 		Student expected = new Student(2, "Linda", "MacCubbin", 2);		
 		Group group = new Group(2, "BB-12");
 		
-		studentDAO.assignToGroup(studentToUpdate, group);
+		studentDao.assignToGroup(studentToUpdate, group);
 		
-		Student actual = studentDAO.findById(2);		
+		Student actual = studentDao.findById(2).get();		
 		assertEquals(expected, actual);
 	}
 	
@@ -115,9 +105,9 @@ class StudentDAOTest {
 		Student student = new Student(1, "Michael", "Gaer");
 		Course course = new Course(3, "physics");
 		
-		studentDAO.assignToCourse(student, course);
+		studentDao.assignToCourse(student, course);
 		
-		List<Student> actual = studentDAO.findAllStudentsRelatedToCourse(3);
+		List<Student> actual = studentDao.findAllStudentsRelatedToCourse(3);
 		assertEquals(expected, actual);
 	}
 	
@@ -125,7 +115,7 @@ class StudentDAOTest {
 	void givenCourseId_whenFindAllStudentsRelatedToCourse_thenReturnListOfStudents() {
 		List <Student> expected = new ArrayList<>(Arrays.asList(new Student(2, "Linda", "MacCubbin"), new Student(6, "Charles", "Ulloa")));
 		
-		List<Student> actual = studentDAO.findAllStudentsRelatedToCourse(3);
+		List<Student> actual = studentDao.findAllStudentsRelatedToCourse(3);
 		
 		assertEquals(expected, actual);
 	}
@@ -134,7 +124,7 @@ class StudentDAOTest {
 	void givenCourseId_whenFindAllStudentWithoutGivenCourse_thenReturnListOfStuedents() {
 		List<Student> expected = new ArrayList<>(Arrays.asList(new Student(1, "Michael", "Gaer")));
 		
-		List<Student> actual = studentDAO.findAllStudentWithoutGivenCourse(1);
+		List<Student> actual = studentDao.findAllStudentWithoutGivenCourse(1);
 		
 		assertEquals(expected, actual);
 	}
@@ -143,9 +133,9 @@ class StudentDAOTest {
 	void givenStudentAndCourse_whenRemoveStudentFromCourse_thenRemoveStudentFromCourse() {
 		List <Student> expected = new ArrayList<>(Arrays.asList(new Student(2, "Linda", "MacCubbin")));
 		
-		studentDAO.removeStudentFromCourse(new Student(6, "Charles", "Ulloa"), new Course(3, "physics"));
+		studentDao.removeStudentFromCourse(new Student(6, "Charles", "Ulloa"), new Course(3, "physics"));
 		
-		List<Student> actual = studentDAO.findAllStudentsRelatedToCourse(3);		
+		List<Student> actual = studentDao.findAllStudentsRelatedToCourse(3);		
 		assertEquals(expected, actual);
 	}
 }

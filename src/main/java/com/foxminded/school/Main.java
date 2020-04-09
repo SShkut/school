@@ -3,9 +3,7 @@ package com.foxminded.school;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import com.foxminded.school.dao.CourseDAO;
-import com.foxminded.school.dao.GroupDAO;
-import com.foxminded.school.dao.StudentDAO;
+import com.foxminded.school.util.ConnectionProvider;
 import com.foxminded.school.util.Menu;
 import com.foxminded.school.util.ScheemaCreator;
 import com.foxminded.school.util.StartupDataCreator;
@@ -13,13 +11,15 @@ import com.foxminded.school.util.StartupDataCreator;
 public class Main {
 	
 	public static void main(String[] args) throws SQLException, IOException {
-		ScheemaCreator scheemaCreator = new ScheemaCreator();
+		String fileName = "/db.properties";
+		ConnectionProvider provider = new ConnectionProvider(fileName);
+		ScheemaCreator scheemaCreator = new ScheemaCreator(provider);
 		scheemaCreator.create();
 		
-		StartupDataCreator startup = new StartupDataCreator(new GroupDAO(), new StudentDAO(), new CourseDAO());
+		StartupDataCreator startup = new StartupDataCreator(provider);
 		startup.bootstrap();
 		
-		Menu menu = new Menu(new CourseDAO(), new StudentDAO(), new GroupDAO());
+		Menu menu = new Menu(provider);
 		menu.createMenu();
 	}
 }

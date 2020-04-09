@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
+	<groups id="1" group_name="AA-11"/>
+	<groups id="2" group_name="BB-12"/>
+	<groups id="3" group_name="CC-13"/>
+
 	<students id="1" first_name="Michael" last_name="Gaer" group_id="1"/>
 	<students id="2" first_name="Linda" last_name="MacCubbin" group_id="1"/>
 	<students id="3" first_name="David" last_name="Nagel" group_id="1"/>

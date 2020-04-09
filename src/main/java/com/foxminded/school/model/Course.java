@@ -3,53 +3,58 @@ package com.foxminded.school.model;
 public class Course {
 
 	private Integer id;
-	private String courseName;
-	private String courseDescription;	
+	private String name;
+	private String description;	
 	
 	public Course() {
 	}	
 
 	public Course(Integer id, String courseName) {
 		this.id = id;
-		this.courseName = courseName;
+		this.name = courseName;
 	}
 
 	public Course(String courseName, String courseDescription) {
-		this.courseName = courseName;
-		this.courseDescription = courseDescription;
+		this.name = courseName;
+		this.description = courseDescription;
 	}
 	
 	public Course(Integer id, String courseName, String courseDescription) {
 		this.id = id;
-		this.courseName = courseName;
-		this.courseDescription = courseDescription;
+		this.name = courseName;
+		this.description = courseDescription;
 	}
 	
 	public Integer getId() {
 		return id;
 	}
+	
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public String getCourseName() {
-		return courseName;
+	
+	public String getName() {
+		return name;
 	}
+	
 	public void setCourseName(String courseName) {
-		this.courseName = courseName;
+		this.name = courseName;
 	}
-	public String getCourseDescription() {
-		return courseDescription;
+	
+	public String getDescription() {
+		return description;
 	}
+	
 	public void setCourseDescription(String courseDescription) {
-		this.courseDescription = courseDescription;
+		this.description = courseDescription;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((courseDescription == null) ? 0 : courseDescription.hashCode());
-		result = prime * result + ((courseName == null) ? 0 : courseName.hashCode());
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
@@ -63,15 +68,15 @@ public class Course {
 		if (getClass() != obj.getClass())
 			return false;
 		Course other = (Course) obj;
-		if (courseDescription == null) {
-			if (other.courseDescription != null)
+		if (description == null) {
+			if (other.description != null)
 				return false;
-		} else if (!courseDescription.equals(other.courseDescription))
+		} else if (!description.equals(other.description))
 			return false;
-		if (courseName == null) {
-			if (other.courseName != null)
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!courseName.equals(other.courseName))
+		} else if (!name.equals(other.name))
 			return false;
 		if (id == null) {
 			if (other.id != null)
@@ -83,6 +88,6 @@ public class Course {
 
 	@Override
 	public String toString() {
-		return id + " " + courseName;
+		return id + " " + name;
 	}
 }

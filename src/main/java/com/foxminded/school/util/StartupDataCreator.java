@@ -7,25 +7,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.foxminded.school.dao.CourseDAO;
-import com.foxminded.school.dao.GroupDAO;
-import com.foxminded.school.dao.StudentDAO;
+import com.foxminded.school.dao.CourseDao;
+import com.foxminded.school.dao.GroupDao;
+import com.foxminded.school.dao.StudentDao;
 import com.foxminded.school.model.Course;
 import com.foxminded.school.model.Group;
 import com.foxminded.school.model.Student;
 
 public class StartupDataCreator {
 	
-	private final static Random rand = new Random();
+	private static final Random rand = new Random();
 	
-	private final GroupDAO groupDAO;
-	private final StudentDAO studentDAO;
-	private final CourseDAO courseDAO;
+	private final GroupDao groupDao;
+	private final StudentDao studentDao;
+	private final CourseDao courseDao;
 	
-	public StartupDataCreator(GroupDAO groupDAO, StudentDAO studentDAO, CourseDAO courseDAO) {
-		this.groupDAO = groupDAO;
-		this.studentDAO = studentDAO;
-		this.courseDAO = courseDAO;
+	public StartupDataCreator(ConnectionProvider provider) {
+		this.groupDao = new GroupDao(provider);
+		this.studentDao = new StudentDao(provider);
+		this.courseDao = new CourseDao(provider);
 	}
 	
 	public void bootstrap() {
@@ -45,7 +45,7 @@ public class StartupDataCreator {
 				.append(rand.nextInt(9))
 				.append(rand.nextInt(9));
 			Group group = new Group(groupName.toString());
-			groupDAO.save(group);
+			groupDao.save(group);
 			groupName.setLength(0);
 		}
 	}
@@ -66,7 +66,7 @@ public class StartupDataCreator {
 		courses.put("numerical analysis", "numerical analysis course");
 		courses.put("probabilistic theory", "probabilistic theory course");
 		courses.put("networking", "networking course");
-		courses.forEach((k, v) -> courseDAO.save(new Course(k, v)));
+		courses.forEach((k, v) -> courseDao.save(new Course(k, v)));
 	}
 	
 	private void createStudents(int studentsNumber) {
@@ -77,17 +77,17 @@ public class StartupDataCreator {
 				, "Fabbro", "Gaer", "Haaland", "Iannaccone", "MacCubbin", "Nagel", "O’Brien", "Padgitt", "Quattro", "James"
 				, "Rack", "Sacchi", "Tague", "Ulloa", "Valek"));
 		for (int i = 0; i < studentsNumber; ++i) {
-			studentDAO.save(new Student(firstNames.get(rand.nextInt(19)), lastNames.get(rand.nextInt(19))));
+			studentDao.save(new Student(firstNames.get(rand.nextInt(19)), lastNames.get(rand.nextInt(19))));
 		}
 		
 	}
 	
 	private void assignStudentsToGroups() {
-		List<Student> students = studentDAO.findAll();
-		List<Group> groups = groupDAO.findAll();
+		List<Student> students = studentDao.findAll();
+		List<Group> groups = groupDao.findAll();
 		for (Group group : groups) {
 			List<Student> studentsForGroup = getStudentNumTimes(rand.nextInt(20) + 10, students);
-			studentsForGroup.forEach(student -> studentDAO.assignToGroup(student, group));
+			studentsForGroup.forEach(student -> studentDao.assignToGroup(student, group));
 		}
 		
 	}
@@ -101,11 +101,11 @@ public class StartupDataCreator {
 	}
 	
 	private void assignStudentsToCourses() {
-		List<Student> students = studentDAO.findAll();
-		List<Course> courses = courseDAO.findAll();
+		List<Student> students = studentDao.findAll();
+		List<Course> courses = courseDao.findAll();
 		for (Student student : students) {
 			List<Course> coursesForStudents = getCoursesNumTimes(rand.nextInt(3), courses);
-			coursesForStudents.forEach(course -> studentDAO.assignToCourse(student, course));
+			coursesForStudents.forEach(course -> studentDao.assignToCourse(student, course));
 		}
 	}
 	

@@ -1,7 +1,7 @@
+DROP TABLE IF EXISTS students_courses;
 DROP TABLE IF EXISTS students;
 DROP TABLE IF EXISTS groups;
 DROP TABLE IF EXISTS courses;
-DROP TABLE IF EXISTS students_courses;
 
 CREATE TABLE groups (
 	id serial PRIMARY KEY,
@@ -25,5 +25,7 @@ CREATE TABLE courses (
 CREATE TABLE students_courses (
 	student_id INTEGER,
 	course_id INTEGER,
-	PRIMARY KEY (student_id, course_id)
+	FOREIGN KEY (student_id) REFERENCES students (id) ON DELETE CASCADE,
+	FOREIGN KEY (course_id) REFERENCES courses (id) ON DELETE CASCADE,
+	UNIQUE (student_id, course_id)
 );

@@ -1,113 +1,144 @@
 package com.foxminded.school.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
-import com.foxminded.school.dao.CourseDAO;
-import com.foxminded.school.dao.GroupDAO;
-import com.foxminded.school.dao.StudentDAO;
+import com.foxminded.school.dao.CourseDao;
+import com.foxminded.school.dao.GroupDao;
+import com.foxminded.school.dao.StudentDao;
 import com.foxminded.school.model.Course;
 import com.foxminded.school.model.Group;
 import com.foxminded.school.model.Student;
 
 public class Menu {
-
-	private final CourseDAO courseDAO;
-	private final StudentDAO studentDAO;
-	private final GroupDAO groupDAO;	
 	
-	public Menu(CourseDAO courseDAO, StudentDAO studentDAO, GroupDAO groupDAO) {
-		this.courseDAO = courseDAO;
-		this.studentDAO = studentDAO;
-		this.groupDAO = groupDAO;
+	private static final Scanner scanner = new Scanner(System.in);
+
+	private final CourseDao courseDao;
+	private final StudentDao studentDao;
+	private final GroupDao groupDao;	
+	
+	public Menu(ConnectionProvider provider) {
+		this.courseDao = new CourseDao(provider);
+		this.studentDao = new StudentDao(provider);
+		this.groupDao = new GroupDao(provider);
 	}
 
 	public void createMenu() {
-		Scanner scanner = new Scanner(System.in);
+
 		showPrompt();
 		while (scanner.hasNext()) {
 			String menuItem = scanner.next();
 			if (menuItem.equalsIgnoreCase("a")) {
-				System.out.print("Enter the student count ");
-				int studentCount = scanner.nextInt();
-				List<Group> groups = groupDAO.findAllGroupsWithLessOrEqualStudentCount(studentCount);
-				groups.forEach(System.out::println);
-				showPrompt();
+				findAllGroupsWithLessOrEqualStudentCount();
 			} else if (menuItem.equalsIgnoreCase("b")) {
-				List<Course> courses = courseDAO.findAll();
-				courses.forEach(System.out::println);
-				System.out.print("Chose course by printing id of the course: ");
-				int courseId = scanner.nextInt();
-				List<Student> students = studentDAO.findAllStudentsRelatedToCourse(courseId);
-				if (students.isEmpty()) {
-					System.out.println("There is no such course or there are no students assigned to this course");
-				} else {
-					students.forEach(System.out::println);
-				}
-				showPrompt();
+				findAllStudentsRelatedToCourse();
 			} else if (menuItem.equalsIgnoreCase("c")) {
-				System.out.print("Enter student's first name: ");
-				String firstName = scanner.next();
-				System.out.print("Enter student's last name: ");
-				String lastName = scanner.next();
-				studentDAO.save(new Student(firstName, lastName));
-				showPrompt();
+				save();
 			} else if (menuItem.equalsIgnoreCase("d")) {
-				System.out.print("Enter student's id: ");
-				int id = scanner.nextInt();
-				if (!studentDAO.isExists(new Student(id))) {
-					System.out.println("There is no student with given id.");
-				} else {
-					studentDAO.deleteById(id);
-				}
-				showPrompt();
+				deleteById();
 			} else if (menuItem.equalsIgnoreCase("e")) {
-				List<Course> courses = courseDAO.findAll();
-				courses.forEach(System.out::println);
-				System.out.print("Chose course by printing id of the course: ");
-				int courseId = scanner.nextInt();
-				Optional<Course> courseOpt = courses.stream().filter((c) -> c.getId().equals(courseId)).findFirst();
-				Course course;
-				if (courseOpt.isPresent()) {
-					course = courseOpt.get();
-					List<Student> studentsWithoutCourse = studentDAO.findAllStudentWithoutGivenCourse(courseId);
-					studentsWithoutCourse.forEach(System.out::println);
-					System.out.print("Chose student by printing id: ");
-					int id = scanner.nextInt();
-					Student student = studentDAO.findById(id);
-					studentDAO.assignToCourse(student, course);
-				} else {
-					System.out.println("There is no course with given name");
-				}
-				showPrompt();
+				assignToCourse();
 			} else if (menuItem.equalsIgnoreCase("f")) {
-				List<Student> students = studentDAO.findAll();
-				students.forEach(System.out::println);
-				System.out.print("Chose student by printing id: ");
-				int studentId = scanner.nextInt();
-				Student student = studentDAO.findById(studentId);
-				List<Course> courses = courseDAO.findAllCoursesOfStudent(student);
-				if (!courses.isEmpty()) {
-					courses.forEach(System.out::println);
-					System.out.print("Chose course by printing id of the course: ");
-					int courseId = scanner.nextInt();
-					Optional<Course> courseOpt = courses.stream().filter((c) -> c.getId() == courseId).findFirst();
-					Course course;
-					if (courseOpt.isPresent()) {
-						course = courseOpt.get();
-						studentDAO.removeStudentFromCourse(student, course);
-						System.out.println("Student " + student + " removed from course " + course);
-					}
-					showPrompt();
-				} else {
-					showPrompt();
-				}
+				removeStudentFromCourse();
 			} else {
 				System.out.println("Should be a valid menu identificator");
 				showPrompt();
 			}
-		}		
+		}
+		scanner.close();
+	}
+	
+	private void findAllGroupsWithLessOrEqualStudentCount() {
+		System.out.print("Enter the student count ");
+		int studentCount = scanner.nextInt();
+		List<Group> groups = groupDao.findAllGroupsWithLessOrEqualStudentCount(studentCount);
+		groups.forEach(System.out::println);
+		showPrompt();
+	}
+	
+	private void findAllStudentsRelatedToCourse() {
+		List<Course> courses = courseDao.findAll();
+		courses.forEach(System.out::println);
+		System.out.print("Chose course by printing id of the course: ");
+		int courseId = scanner.nextInt();
+		List<Student> students = studentDao.findAllStudentsRelatedToCourse(courseId);
+		if (students.isEmpty()) {
+			System.out.println("There is no such course or there are no students assigned to this course");
+		} else {
+			students.forEach(System.out::println);
+		}
+		showPrompt();
+	}
+	
+	private void save() {
+		System.out.print("Enter student's first name: ");
+		String firstName = scanner.next();
+		System.out.print("Enter student's last name: ");
+		String lastName = scanner.next();
+		studentDao.save(new Student(firstName, lastName));
+		showPrompt();
+	}
+	
+	private void deleteById() {
+		System.out.print("Enter student's id: ");
+		int id = scanner.nextInt();
+		if (studentDao.findById(id).isPresent()) {
+			studentDao.deleteById(id);
+		} else {					
+			System.out.println("There is no student with given id.");
+		}
+		showPrompt();
+	}
+	
+	private void assignToCourse() {
+		List<Course> courses = courseDao.findAll();
+		courses.forEach(System.out::println);
+		System.out.print("Chose course by printing id of the course: ");
+		int courseId = scanner.nextInt();
+		Optional<Course> course = courses.stream().filter((c) -> c.getId().equals(courseId)).findFirst();
+		if (course.isPresent()) {
+			List<Student> studentsWithoutCourse = studentDao.findAllStudentWithoutGivenCourse(courseId);
+			studentsWithoutCourse.forEach(System.out::println);
+			System.out.print("Chose student by printing id: ");
+			int id = scanner.nextInt();
+			Optional<Student> student = studentDao.findById(id);
+			if (student.isPresent()) {
+				studentDao.assignToCourse(student.get(), course.get());
+			} else {
+				System.out.println("There is no such student");
+			}
+		} else {
+			System.out.println("There is no course with given name");
+		}
+		showPrompt();
+	}
+
+	private void removeStudentFromCourse() {
+		List<Student> students = studentDao.findAll();
+		students.forEach(System.out::println);
+		System.out.print("Chose student by printing id: ");
+		int studentId = scanner.nextInt();
+		Optional<Student> student = studentDao.findById(studentId);
+		List<Course> courses = new ArrayList<>();
+		if (student.isPresent()) {
+			courses = courseDao.findAllCoursesOfStudent(student.get());
+		}
+		if (!courses.isEmpty()) {
+			courses.forEach(System.out::println);
+			System.out.print("Chose course by printing id of the course: ");
+			int courseId = scanner.nextInt();
+			Optional<Course> course = courses.stream().filter((c) -> c.getId() == courseId).findFirst();
+			if (course.isPresent()) {
+				studentDao.removeStudentFromCourse(student.get(), course.get());
+				System.out.println("Student " + student + " removed from course " + course);
+			}
+			showPrompt();
+		} else {
+			showPrompt();
+		}
 	}
 	
 	private void showPrompt() {
