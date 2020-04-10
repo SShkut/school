@@ -70,12 +70,12 @@ public class StartupDataCreator {
 	}
 	
 	private void createStudents(int studentsNumber) {
-		List<String> firstNames = new ArrayList<>(Arrays.asList("James", "Mary", "John", "Patricia", "Robert"
+		List<String> firstNames = Arrays.asList("James", "Mary", "John", "Patricia", "Robert"
 				, "Jennifer", "Michael", "Linda", "William", "Elizabeth", "David", "Barbara", "Richard", "Susan", "Joseph"
-				, "Jessica", "Thomas", "Sarah", "Charles", "Karen"));
-		List<String> lastNames = new ArrayList<>(Arrays.asList("Aaron", "Bacino", "Cadogan", "D’Acquisto", "Eager"
+				, "Jessica", "Thomas", "Sarah", "Charles", "Karen");
+		List<String> lastNames = Arrays.asList("Aaron", "Bacino", "Cadogan", "D’Acquisto", "Eager"
 				, "Fabbro", "Gaer", "Haaland", "Iannaccone", "MacCubbin", "Nagel", "O’Brien", "Padgitt", "Quattro", "James"
-				, "Rack", "Sacchi", "Tague", "Ulloa", "Valek"));
+				, "Rack", "Sacchi", "Tague", "Ulloa", "Valek");
 		for (int i = 0; i < studentsNumber; ++i) {
 			studentDao.save(new Student(firstNames.get(rand.nextInt(19)), lastNames.get(rand.nextInt(19))));
 		}

@@ -16,17 +16,17 @@ import org.junit.jupiter.api.Test;
 
 import com.foxminded.school.model.Group;
 import com.foxminded.school.util.ConnectionProvider;
-import com.foxminded.school.util.ScheemaCreator;
+import com.foxminded.school.util.SchemaCreator;
 
-class GroupDAOTest {
+class GroupDaoTest {
 	
 	private GroupDao groupDao;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		ConnectionProvider provider = new ConnectionProvider("/dbTest.properties");
-		ScheemaCreator scheemaCreator = new ScheemaCreator(provider);
-		scheemaCreator.create();
+		SchemaCreator schemaCreator = new SchemaCreator(provider);
+		schemaCreator.create();
 		IDatabaseTester tester = new DataSourceDatabaseTester(provider.getDataSource());
 		IDataSet dataSet = new FlatXmlDataSetBuilder().build(this.getClass().getClassLoader().getResource("schoolTestData.xml"));
 		tester.setDataSet(dataSet);

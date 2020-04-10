@@ -14,19 +14,19 @@ import com.foxminded.school.util.ConnectionProvider;
 
 public class CourseDao {
 	
+	private static final String SAVE = "INSERT INTO courses (course_name, course_description) values (?, ?)";
+	private static final String FIND_BY_ID = "SELECT * FROM courses WHERE id = ?";
+	private static final String FIND_ALL = "SELECT * FROM courses";
+	private static final String COURSES_OF_STUDENT = "SELECT c.id, c.course_name "
+			+ "FROM courses c "
+			+ "JOIN students_courses sc ON c.id = sc.course_id "
+			+ "JOIN students s ON s.id = sc.student_id AND s.id = ?";
+	
 	private final ConnectionProvider provider;
 	
 	public CourseDao(ConnectionProvider provider) {
 		this.provider = provider;
 	}
-	
-	private static final String SAVE = "INSERT INTO courses (course_name, course_description) values (?, ?)";
-	private static final String FINDBYID = "SELECT * FROM courses WHERE id = ?";
-	private static final String FINDALL = "SELECT * FROM courses";
-	private static final String COURSESOFSTUDENT = "SELECT c.id, c.course_name "
-			+ "FROM courses c "
-			+ "JOIN students_courses sc ON c.id = sc.course_id "
-			+ "JOIN students s ON s.id = sc.student_id AND s.id = ?";
 
 	public void save(Course course) {
 		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(SAVE, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -40,7 +40,7 @@ public class CourseDao {
 	}
 	
 	public Optional<Course> findById(Integer id) {
-		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(FINDBYID)) {
+		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
 			statement.setInt(1, id);
 			try (ResultSet result = statement.executeQuery()) {
 				if (result.next()) {
@@ -56,7 +56,7 @@ public class CourseDao {
 
 	public List<Course> findAll() {
 		List<Course> courses = new ArrayList<>();
-		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(FINDALL)) {
+		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
 			try (ResultSet result = statement.executeQuery()) {
 				while (result.next()) {
 					courses.add(createCourse(result));
@@ -71,7 +71,7 @@ public class CourseDao {
 	
 	public List<Course> findAllCoursesOfStudent(Student student) {
 		List<Course> courses = new ArrayList<>();
-		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(COURSESOFSTUDENT)) {
+		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(COURSES_OF_STUDENT)) {
 			statement.setInt(1, student.getId());
 			try (ResultSet result = statement.executeQuery()) {
 				while (result.next()) {

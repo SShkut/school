@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import com.foxminded.school.util.ConnectionProvider;
 import com.foxminded.school.util.Menu;
-import com.foxminded.school.util.ScheemaCreator;
+import com.foxminded.school.util.SchemaCreator;
 import com.foxminded.school.util.StartupDataCreator;
 
 public class Main {
@@ -13,8 +13,8 @@ public class Main {
 	public static void main(String[] args) throws SQLException, IOException {
 		String fileName = "/db.properties";
 		ConnectionProvider provider = new ConnectionProvider(fileName);
-		ScheemaCreator scheemaCreator = new ScheemaCreator(provider);
-		scheemaCreator.create();
+		SchemaCreator schemaCreator = new SchemaCreator(provider);
+		schemaCreator.create();
 		
 		StartupDataCreator startup = new StartupDataCreator(provider);
 		startup.bootstrap();

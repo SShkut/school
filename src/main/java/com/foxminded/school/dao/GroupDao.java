@@ -11,22 +11,22 @@ import java.util.Optional;
 import com.foxminded.school.model.Group;
 import com.foxminded.school.util.ConnectionProvider;
 
-public class GroupDao {
+public class GroupDao {	
+
+	private static final String SAVE = "INSERT INTO groups (group_name) values (?)";
+	private static final String FIND_BY_ID = "SELECT * FROM groups WHERE id = ?";
+	private static final String FIND_ALL = "SELECT * FROM groups";
+	private static final String GROUPS_WITH_LESS_OR_EQUAL_STUDENTS = "SELECT group_name "
+			+ "FROM groups g "
+			+ "JOIN students s ON g.id = s.group_id "
+			+ "GROUP BY g.group_name "
+			+ "HAVING count(s.id) <= ?";
 	
 	private final ConnectionProvider provider;
 	
 	public GroupDao(ConnectionProvider provider) {
 		this.provider = provider;
 	}
-
-	private static final String SAVE = "INSERT INTO groups (group_name) values (?)";
-	private static final String FINDBYID = "SELECT * FROM groups WHERE id = ?";
-	private static final String FINDALL = "SELECT * FROM groups";
-	private static final String GROUPSWITHLESSOREQUALSTUDENTS = "SELECT group_name "
-			+ "FROM groups g "
-			+ "JOIN students s ON g.id = s.group_id "
-			+ "GROUP BY g.group_name "
-			+ "HAVING count(s.id) <= ?";
 
 	public void save(Group group) {
 		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(SAVE, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -39,7 +39,7 @@ public class GroupDao {
 	}
 	
 	public Optional<Group> findById(Integer id) { 
-		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(FINDBYID)) {
+		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
 			statement.setInt(1, id);
 			try (ResultSet result = statement.executeQuery()) {
 				if (result.next()) {
@@ -55,7 +55,7 @@ public class GroupDao {
 	
 	public List<Group> findAll() { 
 		List<Group> groups = new ArrayList<>();
-		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(FINDALL)) {
+		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
 			try (ResultSet result = statement.executeQuery()) {
 				while (result.next()) {
 					groups.add(createGroup(result));
@@ -70,7 +70,7 @@ public class GroupDao {
 	
 	public List<Group> findAllGroupsWithLessOrEqualStudentCount(int studentCount) {
 		List<Group> groups = new ArrayList<>();
-		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(GROUPSWITHLESSOREQUALSTUDENTS)) {
+		try (Connection connection = provider.getConnection(); PreparedStatement statement = connection.prepareStatement(GROUPS_WITH_LESS_OR_EQUAL_STUDENTS)) {
 			statement.setInt(1, studentCount);
 			try (ResultSet result = statement.executeQuery()) {
 				while (result.next()) {
