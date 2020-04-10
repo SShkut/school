@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+	<groups id="1" group_name="AA-11"/>
+	<groups id="2" group_name="BB-12"/>
+	<groups id="3" group_name="CC-13"/>
+
+	<students id="1" first_name="Michael" last_name="Gaer" group_id="1"/>
+	<students id="2" first_name="Linda" last_name="MacCubbin" group_id="1"/>
+	<students id="3" first_name="David" last_name="Nagel" group_id="1"/>
+	<students id="4" first_name="David" last_name="Aaron" group_id="3"/>
+	<students id="5" first_name="James" last_name="Richard" group_id="2"/>
+	<students id="6" first_name="Charles" last_name="Ulloa" group_id="2"/>
+	
+	<courses id="1" course_name="biology" course_description="biology course"/>
+	<courses id="2" course_name="chemistry" course_description="chemistry course"/>
+	<courses id="3" course_name="physics" course_description="physics course"/>
+
+	<students_courses student_id="2" course_id="1"/>
+	<students_courses student_id="2" course_id="2"/>
+	<students_courses student_id="2" course_id="3"/>
+	<students_courses student_id="3" course_id="1"/>
+	<students_courses student_id="3" course_id="2"/>
+	<students_courses student_id="4" course_id="1"/>
+	<students_courses student_id="5" course_id="1"/>
+	<students_courses student_id="5" course_id="2"/>
+	<students_courses student_id="6" course_id="1"/>
+	<students_courses student_id="6" course_id="2"/>
+	<students_courses student_id="6" course_id="3"/>
+</dataset>
